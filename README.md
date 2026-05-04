@@ -1,7 +1,8 @@
 # Vylepšený Task Manager
 
 ## Popis
-Správce úkolů s MySQL databází. CRUD operace + automatizované testy.
+Vylepšený správce úkolů, který ukládá seznam do MySQL databáze provádí CREATE, READ, UPDATE, DELETE;
+následuje pytest, který provede automatické testování hlavní nebo testovací dababáze s jedním pozitivním a jedním negativním výsledkem.
 
 ## Požadavky
 - Python 3.x
@@ -13,7 +14,7 @@ pip install mysql-connector-python pytest
 
 ## Spuštění
 1. Vytvoř databázi v MySQL: CREATE DATABASE task_manager;
-2. Spusť program: python main.py
+2. Spusť program: python3 main.py
 
 ## Testy
 1. Vytvoř testovací databázi: CREATE DATABASE task_manager_test;
