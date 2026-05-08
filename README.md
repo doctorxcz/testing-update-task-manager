@@ -1,21 +1,39 @@
-# Vylepšený Task Manager
+# Task Manager - Upgrade
 
-## Popis
-Vylepšený správce úkolů, který ukládá seznam do MySQL databáze provádí CREATE, READ, UPDATE, DELETE;
-následuje pytest, který provede automatické testování hlavní nebo testovací dababáze s jedním pozitivním a jedním negativním výsledkem.
+Konzolová aplikace pro správu úkolů s MySQL databází.
+Upgrade projektu od Engeto - oddělení datové vrstvy (TaskRepository)
+od UI vrstvy (TaskManagerUI), unit testy přes pytest.
 
 ## Požadavky
-- Python 3.x
-- mysql-connector-python
-- pytest
+- Python 3.10+
+- MySQL server (lokálně nebo vzdáleně)
 
 ## Instalace
-pip install mysql-connector-python pytest
+
+1. Naklonuj repozitář:
+   mkdir task-manager-engeto
+   cd task-manager-engeto
+   git clone https://github.com/doctorxcz/testing-update-task-manager
+   
+
+3. Vytvoř a aktivuj virtuální prostředí:
+   python3 -m venv venv
+   source venv/bin/activate    # Mac/Linux
+   venv\Scripts\activate       # Windows
+
+4. Nainstaluj závislosti:
+   pip install -r requirements.txt
+
+5. Vytvoř soubor .env podle .env.example a vyplň přihlašovací údaje k MySQL.
 
 ## Spuštění
-1. Vytvoř databázi v MySQL: CREATE DATABASE task_manager;
-2. Spusť program: python3 main.py
+python main.py
 
 ## Testy
-1. Vytvoř testovací databázi: CREATE DATABASE task_manager_test;
-2. Spusť testy: pytest test_main.py
+pytest -v
+
+## Struktura projektu
+- main.py - vstupní bod, TaskRepository (SQL vrstva)
+- TaskManagerUI.py - uživatelské rozhraní (input/print)
+- database_connect.py - připojení k MySQL
+- test_main.py - unit testy pro TaskRepository
