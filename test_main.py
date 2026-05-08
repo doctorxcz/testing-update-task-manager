@@ -1,25 +1,27 @@
-""" test_main.py - testy pro TaskRepository, s připojením k testovací databázi, s nastavením a čištěním tabulky
-    před a po každém testu, s ověřením funkcí pro přidání, aktualizaci a odstranění úkolů"""
+import os
 import pytest
 import mysql.connector
-from main import TaskRepository # import TaskRepository z main.py pro testování funkcí přidání, aktualizace a odstranění úkolů
+from dotenv import load_dotenv
+from main import TaskRepository
+from database_connect import pripojeni_db
+
+load_dotenv()
 
 
-# připojení k testovací databázi s ověřením připojení, s nastavením parametrů pro testovací DB
 @pytest.fixture(scope="module")
 def db_conn():
-    conn = mysql.connector.connect(
-        host='localhost',
-        database='task_manager_test',
-        user='root',
-        password=''
+    conn = pripojeni_db(
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_TEST_NAME'),
+        test=True
     )
     yield conn
     conn.close()
 
 
-# vytvoření tabulky před každým testem, smazání dat po každém testu
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def setup_tabulka(db_conn):
     cursor = db_conn.cursor()
     cursor.execute('''
@@ -32,13 +34,23 @@ def setup_tabulka(db_conn):
     )
     ''')
     db_conn.commit()
+    cursor.close()
     yield
+    cursor = db_conn.cursor()
+    cursor.execute('DROP TABLE IF EXISTS ukoly')
+    db_conn.commit()
+    cursor.close()
+
+
+@pytest.fixture(autouse=True)
+def cisteni_dat(db_conn):
+    yield
+    cursor = db_conn.cursor()
     cursor.execute('DELETE FROM ukoly')
     db_conn.commit()
     cursor.close()
 
 
-# instance TaskRepository s testovací DB
 @pytest.fixture
 def repo(db_conn):
     return TaskRepository(db_conn)
@@ -60,7 +72,7 @@ def test_pridat_ukol_pozitivni(repo, db_conn):
 
 
 def test_pridat_ukol_negativni_nazev_none(repo):
-    with pytest.raises(Exception):
+    with pytest.raises(mysql.connector.errors.DatabaseError):
         repo.pridat_ukol(None, 'Test popis')
 
 
@@ -114,6 +126,3 @@ def test_odstranit_ukol_pozitivni(repo, db_conn):
 def test_odstranit_ukol_negativni_neexistujici_id(repo):
     result = repo.odstranit_ukol(99999)
     assert result is False
-
-
-
